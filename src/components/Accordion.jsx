@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ActionButtons from "./ActionButtons";
 
-const Accordion = ({ id, title, email, imgSrc, dob, description, gender, country, activeAccordion, onAccordionToggle, onEdit, onDelete }) => {
+const Accordion = ({ id, title, imgSrc, dob, description, gender, country, activeAccordion, activeEditAccordion, onAccordionToggle, onEdit, onDelete, setActiveEditAccordion }) => {
   const isAccordionOpen = id === activeAccordion;
+  const allowExpand = activeEditAccordion === null || activeEditAccordion === id;
   const [editMode, setEditMode] = useState(false);
   const [editedFirst, setEditedFirst] = useState("");
   const [editedLast, setEditedLast] = useState("");
@@ -28,14 +29,21 @@ const Accordion = ({ id, title, email, imgSrc, dob, description, gender, country
   };
 
   const handleContainerClick = () => {
-    if (!editMode) {
+    if (!editMode && allowExpand) {
       onAccordionToggle(id);
+    } else {
+      alert("Cannot toggle accordion while in edit mode or another accordion is in edit mode");
     }
   };
+  
+  
 
   const handleEditClick = () => {
     // Check if age is 18 or above before entering edit mode
     if (calculateAge() >= 18) {
+      // Set activeEditAccordion to the current accordion ID
+      setActiveEditAccordion(id);
+
       setEditMode(true);
       setEditedFirst(title.split(" ")[0]); // Initialize editedFirst with the current first name
       setEditedLast(title.split(" ")[1]); // Initialize editedLast with the current last name
@@ -45,7 +53,7 @@ const Accordion = ({ id, title, email, imgSrc, dob, description, gender, country
       alert("You must be 18 or above to edit your information.");
     }
   };
-
+  
   const handleSaveClick = () => {
     // Save the edited data and exit edit mode
     onEdit(id, {
@@ -56,11 +64,17 @@ const Accordion = ({ id, title, email, imgSrc, dob, description, gender, country
       description: editedDescription,
       dob: calculateBirthDate(editedAge),
     });
+  
+    // Reset activeEditAccordion to null
+    setActiveEditAccordion(null);
+  
     setEditMode(false);
   };
-
+  
   const handleCancelClick = () => {
     // Cancel the edit and exit edit mode
+    setActiveEditAccordion(null); // Reset activeEditAccordion to null
+  
     setEditMode(false);
     // Reset edited values to their original state
     setEditedFirst("");
@@ -70,6 +84,7 @@ const Accordion = ({ id, title, email, imgSrc, dob, description, gender, country
     setEditedDescription(description);
     setEditedAge(null);
   };
+  
 
   const handleDeleteClick = () => {
     // Prompt the user before deleting

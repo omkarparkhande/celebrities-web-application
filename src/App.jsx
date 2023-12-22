@@ -4,12 +4,12 @@ import Accordion from "./components/Accordion";
 import DeleteConfirmationDialog from "./components/DeleteConfirmationDialog";
 import SearchInput from "./components/SearchInput";
 
-
 export default function App() {
-  const [contacts, setContacts] = useState(Records);
+  const [contacts, setContacts] = useState(Records.map((record) => ({ ...record, editMode: false })));
   const [originalContacts, setOriginalContacts] = useState(Records);
   const [search, setSearch] = useState("");
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const [activeEditAccordion, setActiveEditAccordion] = useState(null); // New state
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
@@ -35,22 +35,35 @@ export default function App() {
 
   // Function to toggle the active accordion
   const handleAccordionToggle = (accordionId) => {
+    console.log('Toggle accordion with id:', accordionId);
+    
+    const isAnyAccordionInEditMode = contacts.some((contact) => contact.editMode);
+  
+    if (isAnyAccordionInEditMode) {
+      return;
+    }
+  
     setActiveAccordion(activeAccordion === accordionId ? null : accordionId);
+  
+    console.log("After update:", activeAccordion);
   };
-
+  
+  
+  
   // Function to handle edit action
   const handleEdit = (id, updatedData) => {
-    // Find the contact by id and update the data
     const updatedContacts = contacts.map((contact) => {
       if (contact.id === id) {
-        return { ...contact, ...updatedData };
+        return { ...contact, ...updatedData, editMode: false };
       }
       return contact;
     });
 
-    // Update both contacts and originalContacts to reflect the changes
     setContacts(updatedContacts);
     setOriginalContacts(updatedContacts);
+
+    // Reset activeEditAccordion after editing
+    setActiveEditAccordion(null);
   };
 
   // Function to handle delete action
@@ -88,21 +101,24 @@ export default function App() {
 
       {/* Display Records */}
       {contacts.map((record) => (
-        <div key={record.id}>
-          <Accordion
-            id={record.id}
-            title={`${record.first} ${record.last}`}
-            imgSrc={record.picture}
-            dob={record.dob}
-            description={record.description}
-            country={record.country}
-            gender={record.gender}
-            activeAccordion={activeAccordion}
-            onAccordionToggle={handleAccordionToggle}
-            onEdit={(id, updatedData) => handleEdit(record.id, updatedData)}
-            onDelete={() => handleDelete(record.id)}
-          />
-        </div>
+      <div key={record.id}>
+      <Accordion
+        id={record.id}
+        title={`${record.first} ${record.last}`}
+        imgSrc={record.picture}
+        dob={record.dob}
+        description={record.description}
+        country={record.country}
+        gender={record.gender}
+        activeAccordion={activeAccordion}
+        activeEditAccordion={activeEditAccordion} 
+        /* Make sure this prop is correctly passed */
+        onAccordionToggle={handleAccordionToggle}
+        onEdit={(id, updatedData) => handleEdit(record.id, updatedData)}
+        onDelete={() => handleDelete(record.id)}
+        setActiveEditAccordion={setActiveEditAccordion}
+      />
+      </div>
       ))}
 
       {/* Delete Confirmation Dialog */}
