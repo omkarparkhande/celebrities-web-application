@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import Records from "./data/celebrities.json";
 import Accordion from "./components/Accordion";
 import DeleteConfirmationDialog from "./components/DeleteConfirmationDialog";
+import SearchInput from "./components/SearchInput";
+
 
 export default function App() {
   const [contacts, setContacts] = useState(Records);
+  const [originalContacts, setOriginalContacts] = useState(Records);
   const [search, setSearch] = useState("");
   const [activeAccordion, setActiveAccordion] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -13,11 +16,19 @@ export default function App() {
   // Function to filter records based on the search query
   const handleSearch = (query) => {
     setSearch(query);
-    const filteredContacts = Records.filter((record) => {
+
+    // Use originalContacts if the query is empty
+    const sourceContacts = query.trim() === "" ? originalContacts : contacts;
+
+    // If the query is not empty, filter users based on the search query
+    const filteredContacts = sourceContacts.filter((record) => {
       const fullName = `${record.first} ${record.last}`.toLowerCase();
       return fullName.includes(query.toLowerCase());
     });
+
+    // Update contacts to reflect the changes
     setContacts(filteredContacts);
+
     // Reset activeAccordion when performing a new search
     setActiveAccordion(null);
   };
@@ -37,7 +48,9 @@ export default function App() {
       return contact;
     });
 
+    // Update both contacts and originalContacts to reflect the changes
     setContacts(updatedContacts);
+    setOriginalContacts(updatedContacts);
   };
 
   // Function to handle delete action
@@ -69,17 +82,9 @@ export default function App() {
 
   return (
     <div className="App flex flex-col px-96 py-5">
-      <h1 className="font-bold text-2xl mb-4">List View</h1>
+      <h1 className="font-semibold text-2xl mb-4">List View</h1>
       {/* Search Input */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search user"
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-xl"
-        />
-      </div>
+      <SearchInput value={search} onChange={handleSearch} />
 
       {/* Display Records */}
       {contacts.map((record) => (
