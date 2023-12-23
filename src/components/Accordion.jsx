@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ActionButtons from "./ActionButtons";
 
 const Accordion = ({ id, title, imgSrc, dob, description, gender, country, activeAccordion, activeEditAccordion, onAccordionToggle, onEdit, onDelete, setActiveEditAccordion }) => {
@@ -85,14 +85,6 @@ const Accordion = ({ id, title, imgSrc, dob, description, gender, country, activ
     setEditedAge(null);
   };
   
-
-  const handleDeleteClick = () => {
-    // Prompt the user before deleting
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
-    if (confirmDelete) {
-      onDelete(id);
-    }
-  };
 
   const calculateBirthDate = (editedAge) => {
     const today = new Date();

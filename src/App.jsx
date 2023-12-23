@@ -94,7 +94,7 @@ export default function App() {
   };
 
   return (
-    <div className="App flex flex-col px-96 py-5">
+    <div className="App flex flex-col mx-4 md:mx-8 lg:mx-16 xl:mx-24 2xl:mx-80 px-4 md:px-8 lg:px-16 xl:px-24 2xl:px-48 py-5">
       <h1 className="font-semibold text-2xl mb-4">List View</h1>
       {/* Search Input */}
       <SearchInput value={search} onChange={handleSearch} />
